@@ -1,0 +1,192 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Particulier | impots.gouv.fr</title>
+    <link rel="stylesheet" href="{% static 'app/css/style.css' %}">
+    <script src="{% static 'app/js/scripts.js' %}" defer></script>
+
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo-section">
+            <div class="logo">
+              <img
+                src="{% static 'app/img/logo-impots.png' %}"
+                alt="Logo Impôts"
+                style="width:100px; height:auto;"
+              >
+            </div>
+                <h1 class="site-title">impots.gouv.fr</h1>
+            </div>
+            <div class="header-actions">
+                <div class="search-container">
+                    <input type="text" class="search-input" placeholder="Rechercher">
+                    <button class="search-btn">🔍</button>
+                </div>
+                <div class="login-links">
+                    <a href="#" class="login-link">
+                        <span class="icon-user"></span>
+                        Connexion à l'espace particulier
+                    </a>
+                    <a href="#" class="login-link">
+                        🏢 Connexion à l'espace professionnel
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <nav class="nav-bar">
+        <div class="nav-content">
+            <a href="#" class="nav-item">Accueil</a>
+            <a href="#" class="nav-item active">Particulier</a>
+            <a href="#" class="nav-item">Professionnel</a>
+            <a href="#" class="nav-item">Partenaire</a>
+            <a href="#" class="nav-item">Collectivité</a>
+            <a href="#" class="nav-item">International</a>
+            <a href="#" class="nav-item">International (english)</a>
+            <a href="#" class="contact-rdv">
+                <span class="icon-star"></span>
+                Contact et prise de RDV
+            </a>
+        </div>
+    </nav>
+
+    <div class="alert-banner">
+        <div class="alert-content">
+            <div class="alert-text">
+                <strong>Attention aux arnaques !</strong> Des courriels et SMS frauduleux circulent pour promettre le remboursement d'un trop perçu ou menacer de poursuites pour non paiement d'impôts ou d'amendes. Ces escroqueries n'ont pour but que de vous extorquer de l'argent ou des informations. <a href="#" class="alert-link">En savoir plus</a>
+            </div>
+            <button class="close-alert">×</button>
+        </div>
+    </div>
+
+    <div class="breadcrumb">
+        <a href="#">Accueil</a> › Particulier
+    </div>
+
+    <main class="main-content">
+        <div class="page-header">
+            <div class="page-icon icon-user"></div>
+            <h1 class="page-title">Particulier</h1>
+            <h2 class="page-subtitle">Quelle démarche souhaitez-vous effectuer ?</h2>
+        </div>
+
+        <!-- Chatbot Section - Fonctionnalité Principale -->
+        <div class="chatbot-section">
+            <div class="chatbot-header">
+                <h2 class="chatbot-title">🤖 Assistant Fiscal Intelligent</h2>
+                <p class="chatbot-subtitle">Posez vos questions sur vos impôts, démarches fiscales et obligations. Je vous aide 24h/24 !</p>
+            </div>
+            
+            <div class="chatbot-container">
+                <div class="chat-header">
+                    <div class="chat-avatar">🏛️</div>
+                    <div class="chat-info">
+                        <h3>Assistant DGFiP</h3>
+                        <p class="chat-status">En ligne • Répond instantanément</p>
+                    </div>
+                </div>
+
+                <div class="chat-messages" id="chatMessages">
+                    <div class="message bot">
+                        <div class="message-avatar">🤖</div>
+                        <div class="message-content">
+                            Bonjour ! Je suis votre assistant fiscal personnel. Je peux vous aider avec :
+                            <br>• Vos déclarations d'impôts
+                            <br>• Le prélèvement à la source
+                            <br>• Les délais et échéances
+                            <br>• Les démarches en ligne
+                            <br><br>Comment puis-je vous aider aujourd'hui ?
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quick-suggestions">
+                    <div class="suggestions-title">Suggestions rapides :</div>
+                    <div class="suggestion-chips">
+                        <div class="suggestion-chip" onclick="sendSuggestion('Comment déclarer mes revenus ?')">Comment déclarer mes revenus ?</div>
+                        <div class="suggestion-chip" onclick="sendSuggestion('Dates limites déclaration 2024')">Dates limites déclaration</div>
+                        <div class="suggestion-chip" onclick="sendSuggestion('Modifier mon taux de prélèvement')">Modifier mon taux</div>
+                        <div class="suggestion-chip" onclick="sendSuggestion('Payer mes impôts en ligne')">Payer en ligne</div>
+                        <div class="suggestion-chip" onclick="sendSuggestion('Contester un avis d\\'imposition')">Contester un avis</div>
+                    </div>
+                </div>
+
+                <div class="chat-input-container">
+                    <div class="chat-input-wrapper">
+                        <textarea 
+                            class="chat-input" 
+                            id="chatInput"
+                            placeholder="Tapez votre question sur les impôts..."
+                            rows="1"
+                            onkeypress="handleKeyPress(event)"
+                            oninput="adjustTextareaHeight(this)"
+                        ></textarea>
+                        <button class="send-button" id="sendButton" onclick="sendMessage()">
+                            ▶️
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="services-grid">
+            <a href="#" class="service-card">
+                <div class="service-icon icon-eye"></div>
+                <div class="service-title">Découvrir les tutoriels</div>
+            </a>
+            <a href="#" class="service-card">
+                <div class="service-icon icon-edit"></div>
+                <div class="service-title">Gérer mon prélèvement à la source</div>
+            </a>
+            <a href="#" class="service-card">
+                <div class="service-icon icon-pay"></div>
+                <div class="service-title">Payer mes impôts</div>
+            </a>
+            <a href="#" class="service-card">
+                <div class="service-icon icon-mail"></div>
+                <div class="service-title">Recevoir un avis d'impôt</div>
+            </a>
+            <a href="#" class="service-card">
+                <div class="service-icon icon-fine"></div>
+                <div class="service-title">Payer une amende</div>
+            </a>
+            <a href="#" class="service-card">
+                <div class="service-icon icon-calc"></div>
+                <div class="service-title">Simuler mes impôts</div>
+            </a>
+        </div>
+
+        <div class="secondary-services">
+            <a href="#" class="secondary-card">
+                <div class="secondary-icon icon-location"></div>
+                <div class="secondary-title">Trouver un accueil de proximité</div>
+            </a>
+            <a href="#" class="secondary-card">
+                <div class="secondary-icon icon-calendar"></div>
+                <div class="secondary-title">Voir le calendrier fiscal</div>
+            </a>
+            <a href="#" class="secondary-card">
+                <div class="secondary-icon icon-receipt"></div>
+                <div class="secondary-title">Obtenir un quitus fiscal</div>
+            </a>
+            <a href="#" class="secondary-card">
+                <div class="secondary-icon icon-arrow"></div>
+                <div class="secondary-title">Voir toutes les démarches</div>
+            </a>
+        </div>
+
+        <h2 class="section-title">À la une</h2>
+    </main>
+
+    <div class="feedback-widget">
+        <div>Votre avis sur le site</div>
+    </div>
+
+</body>
+</html>
