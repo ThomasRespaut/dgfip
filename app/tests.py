@@ -1,48 +1,59 @@
 import os
-from huggingface_hub import hf_hub_download
-from llama_cpp import Llama
+import json
+from mistralai import Mistral
+import requests
+from dotenv import load_dotenv
+load_dotenv()
 
-# Paramètres
-repo_id = "TheBloke/Mistral-7B-Instruct-v0.1-GGUF"
-filename = "mistral-7b-instruct-v0.1.Q5_K_M.gguf"
-local_dir = "./models/mistral-7b-q5"
-local_path = os.path.join(local_dir, filename)
+# 1. Vérification de la clé API
+api_key = os.getenv("MISTRAL_API_KEY")
+print("🔑 MISTRAL_API_KEY détectée :", "✅" if api_key else "❌ (inexistante)")
 
-print("📦 Initialisation du chargement du modèle Mistral-7B quantisé (Q5_K_M)")
+# 2. Initialisation du client
+try:
+    client = Mistral(api_key=api_key)
+    print("🚀 Client Mistral initialisé.")
+except Exception as e:
+    print("❌ Erreur init client Mistral :", e)
+    raise
 
-# Étape 1 : Créer le dossier local si besoin
-if not os.path.exists(local_dir):
-    print(f"📁 Création du dossier local : {local_dir}")
-    os.makedirs(local_dir)
+# 3. Test des embeddings
+model_embed = "mistral-embed"
+texts = ["Embed this sentence.", "As well as this one."]
+print(f"\n📦 Envoi d'une requête embeddings ({model_embed}) pour {len(texts)} textes...")
+try:
+    emb_resp = client.embeddings.create(model=model_embed, inputs=texts)
+    print("✅ Embeddings reçus.")
+    print("ℹ️ Usage :", emb_resp.usage)
+    for i, item in enumerate(emb_resp.data):
+        print(f" • Embedding[{i}] dimension :", len(item.embedding))
+except requests.HTTPError as http_err:
+    print("❌ HTTPError embeddings :", http_err)
+    print("   status_code:", http_err.response.status_code)
+    print("   body      :", http_err.response.text)
+except Exception as e:
+    print("❌ Autre erreur embeddings :", e)
 
-# Étape 2 : Vérifier la présence du fichier local
-if not os.path.exists(local_path):
-    print("❌ Modèle non trouvé localement.")
-    print("⬇️ Téléchargement depuis Hugging Face...")
-    model_path = hf_hub_download(
-        repo_id=repo_id,
-        filename=filename,
-        local_dir=local_dir,
-        local_dir_use_symlinks=False
+# 4. Test du chat
+model_chat = "mistral-large-latest"
+messages = [
+    {"role": "system", "content": "Tu es un assistant fiscal expert de la DGFiP."},
+    {"role": "user", "content": "What is the best French cheese?"},
+]
+print(f"\n💬 Envoi d'une requête chat ({model_chat}) avec {len(messages)} messages...")
+try:
+    chat_resp = client.chat.complete(
+        model=model_chat,
+        messages=messages,
+        temperature=0.2,
+        top_p=1.0,
+        n=1
     )
-    print(f"✅ Modèle téléchargé et stocké dans : {model_path}")
-else:
-    print(f"✅ Modèle déjà présent localement à : {local_path}")
-    model_path = local_path
-
-# Étape 3 : Chargement du modèle avec llama.cpp
-print("🚀 Chargement du modèle avec llama.cpp...")
-llm = Llama(
-    model_path=model_path,
-    n_ctx=2048
-)
-print("✅ Modèle prêt à l'utilisation.")
-
-# Étape 4 : Prompt de test
-prompt = "[INST] Explique-moi le machine learning en deux phrases. [/INST]"
-print("\n🧠 Génération de réponse...")
-output = llm(prompt, max_tokens=200)
-
-# Résultat
-print("\n🎯 Réponse générée :\n")
-print(output["choices"][0]["text"])
+    print("✅ Réponse chat brute :", json.dumps(chat_resp.choices, default=lambda o: o.__dict__, indent=2))
+    print("💡 Contenu :", chat_resp.choices[0].message.content)
+except requests.HTTPError as http_err:
+    print("❌ HTTPError chat :", http_err)
+    print("   status_code:", http_err.response.status_code)
+    print("   body      :", http_err.response.text)
+except Exception as e:
+    print("❌ Autre erreur chat :", e)
